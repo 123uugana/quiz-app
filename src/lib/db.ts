@@ -2,25 +2,38 @@ import "server-only";
 
 import { Pool } from "pg";
 
-const connectionString = process.env.DATABASE_URL;
-
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not defined in .env.local");
-}
-
 const globalForDatabase = globalThis as unknown as {
   __quizDatabasePool?: Pool;
 };
 
-export const db =
-  globalForDatabase.__quizDatabasePool ??
-  new Pool({
+function getDatabasePool() {
+  if (globalForDatabase.__quizDatabasePool) {
+    return globalForDatabase.__quizDatabasePool;
+  }
+
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error("DATABASE_URL environment variable is not configured.");
+  }
+
+  const pool = new Pool({
     connectionString,
     max: 5,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForDatabase.__quizDatabasePool = db;
+  globalForDatabase.__quizDatabasePool = pool;
+  return pool;
 }
+
+// Route modules are evaluated during `next build`. Delay creating the pool until
+// a request actually uses it so builds do not require a live database connection.
+export const db = new Proxy({} as Pool, {
+  get(_target, property, receiver) {
+    const pool = getDatabasePool();
+    const value = Reflect.get(pool, property, receiver);
+    return typeof value === "function" ? value.bind(pool) : value;
+  },
+});
