@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Тулгарсан асуудал, бэрхшээл
+
+Gemini API-г төсөлтэй холбох, хиймэл оюун ухааны үүсгэсэн мэдээллийг зөв бүтэцтэй авах, хэрэглэгчийн нэвтрэлтийг хэрэгжүүлэх, PostgreSQL өгөгдлийн сантай холбох зэрэг бэрхшээл тулгарсан.
+
+## Асуудлыг хэрхэн шийдвэрлэсэн бэ?
+
+Gemini API-аас JSON хэлбэрийн хариулт авч, Zod ашиглан өгөгдлийг шалгасан. Асуулт бүр дөрвөн сонголттой, нэг зөв хариулттай эсэхийг баталгаажуулсан. Clerk ашиглан нэвтрэлтийн систем хийж, database transaction ашиглан мэдээллийг найдвартай хадгалсан.
+
 ## Getting Started
 
 First, run the development server:
