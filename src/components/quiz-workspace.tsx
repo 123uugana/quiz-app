@@ -13,8 +13,6 @@ import {
   FileText,
   LoaderCircle,
   Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
   Plus,
   Sparkles,
   XCircle,
@@ -30,7 +28,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
+import { LiquidMetalButton } from "@/components/ui/liquid-metal-button";
+import { DesktopSidebar, Sidebar } from "@/components/ui/sidebar";
 import {
   Sheet,
   SheetContent,
@@ -39,6 +38,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { AiLoader } from "@/components/ui/ai-loader";
 import type {
   Article,
   ArticleListItem,
@@ -86,6 +86,7 @@ function HistoryList({
           size="icon-sm"
           onClick={onNew}
           aria-label="Create new article"
+          className="metal-control"
         >
           <Plus />
         </Button>
@@ -106,10 +107,10 @@ function HistoryList({
               type="button"
               onClick={() => onSelect(article.id)}
               className={cn(
-                "w-full rounded-lg px-2.5 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "metal-history-item w-full rounded-xl px-2.5 py-2.5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 selectedId === article.id
-                  ? "bg-muted text-foreground"
-                  : "text-foreground/80 hover:bg-muted/70 hover:text-foreground",
+                  ? "metal-history-item-selected text-foreground"
+                  : "text-foreground/80 hover:text-foreground",
               )}
             >
               <span className="line-clamp-2 text-sm font-medium leading-snug">
@@ -174,7 +175,7 @@ function GeneratorForm({
   }
 
   return (
-    <Card className="w-full max-w-2xl bg-background shadow-sm">
+    <Card className="metal-card w-full max-w-2xl overflow-hidden rounded-3xl">
       <CardHeader className="gap-2">
         <CardTitle className="flex items-center gap-2 text-lg text-foreground">
           <Sparkles className="size-5" aria-hidden="true" />
@@ -203,6 +204,7 @@ function GeneratorForm({
               maxLength={200}
               autoComplete="off"
               disabled={submitting}
+              className="metal-field h-11 rounded-xl"
             />
           </div>
 
@@ -224,7 +226,7 @@ function GeneratorForm({
               value={content}
               onChange={(event) => setContent(event.target.value)}
               placeholder="Paste your article content here..."
-              className="min-h-52 resize-y"
+              className="metal-field min-h-52 resize-y rounded-xl"
               maxLength={50_000}
               disabled={submitting}
             />
@@ -240,19 +242,12 @@ function GeneratorForm({
           )}
 
           <div className="flex justify-end">
-            <Button type="submit" size="lg" disabled={!canSubmit}>
-              {submitting ? (
-                <>
-                  <LoaderCircle className="animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles />
-                  Generate summary
-                </>
-              )}
-            </Button>
+            <LiquidMetalButton
+              type="submit"
+              label="Generate summary"
+              loading={submitting}
+              disabled={!canSubmit}
+            />
           </div>
         </form>
       </CardContent>
@@ -307,12 +302,17 @@ function ArticleResult({
 
   return (
     <div className="w-full max-w-3xl space-y-6">
-      <Button type="button" variant="ghost" onClick={onBack}>
+      <Button
+        type="button"
+        variant="ghost"
+        onClick={onBack}
+        className="metal-control rounded-full"
+      >
         <ArrowLeft />
         New article
       </Button>
 
-      <Card className="bg-background shadow-sm">
+      <Card className="metal-card overflow-hidden rounded-3xl">
         <CardHeader>
           <CardTitle className="text-xl text-foreground">
             {article.title}
@@ -322,7 +322,7 @@ function ArticleResult({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-xl bg-muted/60 p-4 sm:p-5">
+          <div className="metal-inset rounded-2xl p-4 sm:p-5">
             <h2 className="mb-2 flex items-center gap-2 font-semibold text-foreground">
               <Sparkles className="size-4" />
               Summary
@@ -334,7 +334,7 @@ function ArticleResult({
         </CardContent>
       </Card>
 
-      <Card className="bg-background shadow-sm">
+      <Card className="metal-card overflow-hidden rounded-3xl">
         <CardHeader>
           <CardTitle className="text-lg text-foreground">
             Test your knowledge
@@ -359,8 +359,8 @@ function ArticleResult({
                     <label
                       key={option}
                       className={cn(
-                        "flex cursor-pointer items-start gap-3 rounded-lg border px-3 py-3 text-sm leading-relaxed transition-colors",
-                        !result && selected && "border-primary bg-muted",
+                        "metal-option flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-sm leading-relaxed",
+                        !result && selected && "metal-option-selected",
                         result && correct && "border-emerald-500 bg-emerald-50",
                         incorrect && "border-destructive bg-destructive/10",
                         result && !selected && !correct && "opacity-65",
@@ -406,7 +406,7 @@ function ArticleResult({
           {result ? (
             <div
               role="status"
-              className="rounded-xl border bg-muted/50 p-5 text-center"
+              className="metal-inset rounded-2xl p-5 text-center"
             >
               <p className="text-sm text-muted-foreground">Your score</p>
               <p className="mt-1 text-3xl font-semibold text-foreground">
@@ -415,7 +415,7 @@ function ArticleResult({
               <Button
                 type="button"
                 variant="outline"
-                className="mt-4"
+                className="metal-control mt-4 rounded-full"
                 onClick={() => {
                   setAnswers({});
                   setResult(null);
@@ -426,15 +426,14 @@ function ArticleResult({
             </div>
           ) : (
             <div className="flex justify-end">
-              <Button
+              <LiquidMetalButton
                 type="button"
-                size="lg"
+                label="Submit quiz"
+                loadingLabel="Submitting..."
+                loading={submitting}
                 disabled={!allAnswered || submitting}
                 onClick={submitQuiz}
-              >
-                {submitting && <LoaderCircle className="animate-spin" />}
-                Submit quiz
-              </Button>
+              />
             </div>
           )}
         </CardContent>
@@ -444,7 +443,7 @@ function ArticleResult({
 }
 
 export function QuizWorkspace() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -548,14 +547,14 @@ export function QuizWorkspace() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f8fafc] text-foreground">
-      <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4 shadow-xs">
+    <div className="metal-app flex min-h-screen flex-col text-foreground">
+      <header className="metal-header sticky top-0 z-30 flex h-16 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
           <Button
             type="button"
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="metal-control rounded-full md:hidden"
             aria-label="Open history"
             onClick={() => setMobileMenuOpen(true)}
           >
@@ -564,18 +563,23 @@ export function QuizWorkspace() {
           <button
             type="button"
             onClick={showGenerator}
-            className="text-base font-semibold tracking-tight text-foreground"
+            className="flex items-center gap-2 text-base font-semibold tracking-tight text-foreground"
           >
+            <span className="metal-control flex size-8 items-center justify-center rounded-full">
+              <Sparkles className="size-4" />
+            </span>
             Quiz app
           </button>
         </div>
         <div className="flex items-center gap-2">
           <Show when="signed-out">
             <SignInButton>
-              <Button variant="ghost">Sign in</Button>
+              <Button variant="ghost" className="metal-control rounded-full">
+                Sign in
+              </Button>
             </SignInButton>
             <SignUpButton>
-              <Button>Sign up</Button>
+              <Button className="rounded-full shadow-lg">Sign up</Button>
             </SignUpButton>
           </Show>
           <Show when="signed-in">
@@ -591,40 +595,37 @@ export function QuizWorkspace() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside
-          className={cn(
-            "hidden shrink-0 border-r bg-background transition-[width] duration-200 md:flex md:flex-col",
-            sidebarOpen ? "w-64" : "w-14",
-          )}
-        >
-          <div
-            className={cn(
-              "flex h-12 items-center",
-              sidebarOpen ? "justify-end px-3" : "justify-center",
+        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen}>
+          <DesktopSidebar className="metal-sidebar border-r px-0 py-0">
+            {sidebarOpen ? (
+              <HistoryList {...historyProps} />
+            ) : (
+              <div className="flex h-12 shrink-0 items-center justify-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={showGenerator}
+                  aria-label="Create new article"
+                  className="metal-control"
+                >
+                  <Plus />
+                </Button>
+              </div>
             )}
-          >
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => setSidebarOpen((open) => !open)}
-              aria-label={sidebarOpen ? "Collapse history" : "Expand history"}
-            >
-              {sidebarOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
-            </Button>
-          </div>
-          <Separator />
-          {sidebarOpen && <HistoryList {...historyProps} />}
-        </aside>
+          </DesktopSidebar>
+        </Sidebar>
 
-        <main className="flex flex-1 items-start justify-center px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
+        <main className="relative flex flex-1 items-start justify-center overflow-hidden px-4 py-8 sm:px-8 sm:py-12 lg:py-16">
           {articleLoading ? (
-            <div className="flex items-center gap-2 py-24 text-sm text-muted-foreground">
-              <LoaderCircle className="size-5 animate-spin" />
-              Loading article...
+            <div className="flex w-full justify-center py-24">
+              <AiLoader
+                label="Loading article"
+                className="[&_.ai-loader-letter]:text-muted-foreground [&_.ai-loader-bar]:bg-foreground/10"
+              />
             </div>
           ) : pageError ? (
-            <Card className="w-full max-w-lg">
+            <Card className="metal-card w-full max-w-lg rounded-3xl">
               <CardHeader>
                 <CardTitle className="text-foreground">
                   Something went wrong
@@ -632,10 +633,19 @@ export function QuizWorkspace() {
                 <CardDescription>{pageError}</CardDescription>
               </CardHeader>
               <CardContent className="flex gap-2">
-                <Button type="button" onClick={() => void loadHistory()}>
+                <Button
+                  type="button"
+                  onClick={() => void loadHistory()}
+                  className="rounded-full"
+                >
                   Try again
                 </Button>
-                <Button type="button" variant="outline" onClick={showGenerator}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={showGenerator}
+                  className="metal-control rounded-full"
+                >
                   New article
                 </Button>
               </CardContent>
@@ -653,8 +663,11 @@ export function QuizWorkspace() {
       </div>
 
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <SheetContent side="left" className="w-[85%] max-w-xs p-0">
-          <SheetHeader className="border-b pr-12 text-left">
+        <SheetContent
+          side="left"
+          className="metal-sidebar w-[85%] max-w-xs border-r p-0"
+        >
+          <SheetHeader className="border-b border-white/70 pr-12 text-left">
             <SheetTitle>Quiz app</SheetTitle>
             <SheetDescription>Your saved article history</SheetDescription>
           </SheetHeader>
